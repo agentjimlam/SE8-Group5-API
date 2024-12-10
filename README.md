@@ -1,5 +1,10 @@
 # SE8-Group5-API
 
+### Version 0.1a. This is a base copy branch, from after approving Chooi Chin's git request, and after I made the changes listed below  
+- commented out the Jackson dependencies as they are duplicates. Spring-boot-starter and spring-boot-starter-web dependency alr include these Jackson modules
+- Added ApiKey.java in the .gitignore so that we do not have to always remove API key in our local repo each time we just want to git push to our own forked repo. Git will just not track any future edits to ApiKey.java
+
+
 ## Endpoints
 
 Endpoints in **controllerNote.md**.
