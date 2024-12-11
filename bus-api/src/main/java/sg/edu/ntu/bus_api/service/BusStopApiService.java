@@ -1,6 +1,7 @@
 package sg.edu.ntu.bus_api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +47,22 @@ public class BusStopApiService {
     return results;
   }
 
-  // find all, used by the app endpoint
-  public List<BusStop> findAll(){
-    return busStopRepo.findAll();
+
+  // this will actually return one sample. It will not
+  // return the who list because it is too large.
+  // It is called findAll() just to show the find
+  public BusStop findFirstOne(){
+    // find the first id
+    Optional<BusStop> optionalBusStop = busStopRepo.findById(1L);
+    // if the result is present
+    if(optionalBusStop.isPresent()){
+      BusStop foundBusStop = optionalBusStop.get();
+      return foundBusStop;
+    }
+    // if no result
+    else {
+      return null;
+    }
   }
 
 

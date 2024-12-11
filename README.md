@@ -11,20 +11,20 @@ Note that there are two types of API calls here.
 
 
 ## Load data
-  
-**IMPORTANT**: Do this only one time. After that comment out the lines, as we do not want to load the database again.
+
+The Postgres database can persist now. To load the data just one time use the following GET /datamall endpoints.
+
+To load the data, use the Datamall endpoints. Call these endpoints one by one.
+
+The **bus routes** data is very large. Be patient and wait. It can take more than 15 minutes depending on network traffic.
 
 ```
-  // post construct to load the data
-  // IMPORTANT: Do this only one time.
-  // After that comment out the lines, as we do not want to 
-  // load the database again.
-  @PostConstruct
-  public void load(){
-    busStopApiService.getBusStops();
-    busServiceApiService.getBusServices();
-    busRouteApiService.getBusRoutes();
-  }
+- Bus services
+  - /datamall/services
+- Bus stops
+  - /datamall/stops
+- Bus routes
+  - /datamall/routes
 
 ```
 
@@ -34,22 +34,34 @@ All Controller files to be in this folder
 
 ### Supply to front-end
 
-Supply to front-end, the route is prefixed by **/app**.
+Supply to front-end, the route is prefixed by **/app**. This will return the first id of each table. This serves as a test to make sure the endpoint is working. Returning the whole data is too large.
 
 - Bus services
   - /app/services
+- To find one bus service
+  - /app/services/{serviceNo}
+  - localhost:8080/app/services/58
 - Bus stops
   - /app/stops
+- To find one bus stop
+  - /app/stops/{busStopCode}
+  - localhost:8080/app/stops/53009
 - Bus routes
   - /app/routes
-- Bus arrival
+- To find bus route by service number and direction
+  - /app/routes/service/{serviceNo}/direction/{direction}
+  - localhost:8080/app/routes/service/80/direction/1
+- Bus arrival - Notes that this will return the Datamall string as it is.
   - /app/arrival
+
 
 ## From datamall
 
-This is for initial testing to get the data one by one. Now, the data can be loaded once post construct in **service/DataLoader**.
+This is for initial testing to get the data one by one. 
 
 Getting from Datamall, the route is prefixed by **/datamall**.
+
+Not using DataLoader because the data is too large.
 
 - Bus services
   - /datamall/services

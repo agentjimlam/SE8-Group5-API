@@ -26,13 +26,22 @@ public class AppBusStopController {
 
   // get the bus stop code
   @GetMapping("/app/stops")
-  public ResponseEntity<?> findAll(){
+  public ResponseEntity<?> findFirstOne(){
     Map<String, Object> response = new LinkedHashMap<>();
-    List<BusStop> busStopList = busStopApiService.findAll();
-    // prepare the response
-    response.put("status", "Successful");
-    response.put("data", busStopList);
-    return new ResponseEntity<>(response, HttpStatus.OK);
+    BusStop busStop = busStopApiService.findFirstOne();
+    if(busStop!=null){
+      // prepare the response
+      response.put("status", "Successful");
+      response.put("data", busStop);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    // no result is found
+    else {
+      response.clear();
+      response.put("status", "Failed");
+      response.put("message", "No data are found.");
+      return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }    
   }
 
 

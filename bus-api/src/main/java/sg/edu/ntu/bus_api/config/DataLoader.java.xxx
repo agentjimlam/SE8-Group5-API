@@ -10,7 +10,15 @@ import sg.edu.ntu.bus_api.service.BusStopApiService;
 
 /* Load all the Datamall data into the database once. */
 
-@Component
+/*
+ * USE THIS:
+ * Use the individual GET /datamall to load the database is better.
+ * 
+ * 
+ */
+
+// remove this @Component to make sure data in database persist.
+//@Component
 public class DataLoader {
   // autowired services
   BusStopApiService busStopApiService;
@@ -33,9 +41,9 @@ public class DataLoader {
   // load the database again.
   @PostConstruct
   public void load(){
-    busStopApiService.getBusStops();
-    busServiceApiService.getBusServices();
-    busRouteApiService.getBusRoutes();
+    // busStopApiService.getBusStops();
+    // busServiceApiService.getBusServices();
+    // busRouteApiService.getBusRoutes();
   }
 
 }

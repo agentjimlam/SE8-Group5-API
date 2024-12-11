@@ -1,6 +1,7 @@
 package sg.edu.ntu.bus_api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sg.edu.ntu.bus_api.entity.BusRoute;
+import sg.edu.ntu.bus_api.entity.BusStop;
 import sg.edu.ntu.bus_api.repository.BusRouteRepository;
 
 @Service
@@ -41,9 +43,27 @@ public class BusRouteApiService {
     getBusRoutes();
   }
 
-  // find all, used by the app endpoint
-  public List<BusRoute> findAll(){
-    return busRouteRepo.findAll();
+  // find only the first id.
+  // the actual data is too larget.
+  public BusRoute findFirstOne(){
+    // find the first id
+    Optional<BusRoute> optionalBusRoute = busRouteRepo.findById(1L);
+    // if the result is present
+    if(optionalBusRoute.isPresent()){
+      BusRoute foundBusRoute = optionalBusRoute.get();
+      return foundBusRoute;
+    }
+    // if no result
+    else {
+      return null;
+    }
+  }
+
+  // find by service no and direction
+  public List<BusRoute> findByServiceDirection(String serviceNo, String direction) {
+    return 
+      busRouteRepo.findByServiceNoAndDirectionIgnoreCase
+        (serviceNo, direction);
   }
 
   // counter to keep track of the skip

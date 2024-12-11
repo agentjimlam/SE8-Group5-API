@@ -1,6 +1,7 @@
 package sg.edu.ntu.bus_api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sg.edu.ntu.bus_api.entity.BusService;
+import sg.edu.ntu.bus_api.entity.BusStop;
 import sg.edu.ntu.bus_api.repository.BusServiceRepository;
 
 @Service
@@ -50,10 +52,22 @@ public class BusServiceApiService {
     return results;
   }
 
-  // find all, used by the app endpoint
-  public List<BusService> findAll(){
-    return busServiceRepo.findAll();
+  // find only the first id, used by the app endpoint
+  // the whole data is too larget to return at once.
+    public BusService findFirstOne(){
+    // find the first id
+    Optional<BusService> optionalBusService = busServiceRepo.findById(1L);
+    // if the result is present
+    if(optionalBusService.isPresent()){
+      BusService foundBusService = optionalBusService.get();
+      return foundBusService;
+    }
+    // if no result
+    else {
+      return null;
+    }
   }
+
 
   // web client
   public HttpStatusCode getBusServices() {
