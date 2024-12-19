@@ -1,5 +1,7 @@
 # SE8-Group5-API
 
+This is a backup copy of main branch v0.2b with the patch to fix calling API key environment variable included.
+
 ## Keeping Datamall API secret
 
 ### Step 1:
