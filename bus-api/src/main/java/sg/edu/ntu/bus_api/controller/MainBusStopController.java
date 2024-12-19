@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/app1")
 public class MainBusStopController {
@@ -30,7 +32,7 @@ public class MainBusStopController {
     // Create a bus stop.
     // CAUTION: this method creates bus stop in the local database and it is persists
     @PostMapping("/bus-stops")
-    public ResponseEntity<BusStop> createBusStop(@RequestBody BusStop busStop) {
+    public ResponseEntity<BusStop> createBusStop(@Valid @RequestBody BusStop busStop) {
         BusStop newBusStop = mainBusStopApiService.createBusStop(busStop);
         return new ResponseEntity<>(newBusStop, HttpStatus.CREATED);
     }

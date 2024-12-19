@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BusServiceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleBusStopNotFoundException (BusServiceNotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleBusServiceNotFoundException (BusServiceNotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -41,10 +41,13 @@ public class GlobalExceptionHandler {
     // Validation exception handler
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException e) {
+        // Get a list of validation errors
         List<ObjectError> validationErrors = e.getBindingResult().getAllErrors();
 
+        // Create a StringBuilder to store all the messages
         StringBuilder sb = new StringBuilder();
 
+        // Loop through all the errors and append the messages
         for (ObjectError error : validationErrors) {
             sb.append(error.getDefaultMessage() + ". ");
         }
@@ -60,9 +63,24 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("Something went wrong. This is from General Exception handler.", LocalDateTime.now());
 
         //you can call logger here
-        logger.error("🔴 This is an error message");
+        logger.error("🔴 This is a General error message");
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Illegal Argument exception handler
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException (IllegalArgumentException e){
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); 
+    }
+
+    // Duplicate Bus stop code exception handler
+    @ExceptionHandler(BusStopDuplicateException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateBusStopCodeException (BusStopDuplicateException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+        logger.error("🔴🔴🔴 This is a Duplicate Bus Stop Code error message", e);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
 
