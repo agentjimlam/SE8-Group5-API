@@ -1,0 +1,121 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.1
+  heroku: circleci/heroku@2.0.0
+  docker: circleci/docker@2.1.4
+  snyk: snyk/snyk@1.5.0
+  # The maven orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/maven
+  maven: circleci/maven@1.3
+
+jobs:
+  build:
+    docker:
+      - image: cimg/eclipse-temurin:17-jdk-jammy
+    steps:
+      - checkout
+      # - restore_cache: # restore the saved cache after the first run or if "pom.xml" has changed
+        # key:
+            # - maven-{{ checksum "pom.xml" }}
+            # - maven-
+      - run: |
+          echo "Install dependencies"
+          ./mvnw install -DskipTests
+      - run: |
+          echo "Build project"
+          mvn clean package
+      # - save_cache: # save the project dependencies
+      #     paths:
+      #       - ~/.m2
+      #     key: circleci-demo-spring {{ checksum "pom.xml" }}
+  test:
+    docker:
+      - image: cimg/eclipse-temurin:17-jdk-jammy
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      - run: |
+          echo "Running tests"
+          mvn test
+
+  build-and-push:
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check:
+          docker-username: DOCKER_USERNAME
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          image: jlam733/education-space
+          tag: <<pipeline.git.tag>>
+      - docker/push:
+          image: jlam733/education-space
+          tag: <<pipeline.git.tag>>
+
+  deploy:
+    docker:
+      - image: cimg/eclipse-temurin:17-jdk-jammy
+    steps:
+      - setup_remote_docker
+      - heroku/install
+      - checkout
+      - run:
+          name: Heroku Container Push
+          command: |
+            heroku container:login
+            heroku stack:set container -a jimmylam-su-devops
+            heroku container:push web -a jimmylam-su-devops
+            heroku container:release web -a jimmylam-su-devops
+  scan:
+    docker:
+      - image: cimg/eclipse-temurin:17-jdk-jammy
+    environment:
+      IMAGE_NAME: jlam733/education-space
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - run: docker build -t $IMAGE_NAME .
+      - snyk/scan: 
+          docker-image-name: $IMAGE_NAME
+  codescan:
+    docker:
+      - image: cimg/eclipse-temurin:17-jdk-jammy
+    environment:
+      IMAGE_NAME: jlam733/education-space
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - snyk/install
+      - run: |
+          snyk code test
+
+workflows:
+  simple_workflow:
+    jobs:
+      - build
+      - scan:
+          requires:
+            - build
+      - codescan:
+          requires:
+            - build
+      - test:
+          requires:
+            - scan
+      # - build-and-push:
+      #     filters:
+      #       branch:
+                # only: release
+      # - deploy:
+      #       requires:
+      #         - build-and-push
+      #       filters:
+      #         tags:
+      #           only: /^v.*/
