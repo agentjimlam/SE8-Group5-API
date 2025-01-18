@@ -1,6 +1,7 @@
 # SE8-Group5-API
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 Version 5.1.0
 - Added .circleci folder and config.yml
 
@@ -9,6 +10,9 @@ Version 5.0.0
 - Renamed UserAccessControllerTest.java to a .txt file
 =======
 Release branch
+=======
+Develop branch
+>>>>>>> d2c2af2 (first develop branch commit)
 
 Version 4.0.0
 - Removed bus stop @DecimalMax @DecimalMin for Latitude and Longitude causes error during the pull of BusStops from LTA Datamall because there's bus stops in Malaysia but my Latitude Longitude min and max range settings to only Singapore land block those bus stops from getting pulled from LTA Datamall. This was causing issue when trying to build a Docker image.
