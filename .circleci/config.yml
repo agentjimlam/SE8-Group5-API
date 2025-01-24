@@ -20,8 +20,15 @@ jobs:
       - run: |
           echo "Navigating to the bus-api directory"
           cd bus-api
-          echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
-          ./mvnw install -DskipTests
+      - run:
+          name: Install Dependencies
+          command: ./mvnw dependency:resolve
+      - run:
+          name: Build Project
+          command: ./mvnw clean package -DskipTests
+      # - run: |
+      #     echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
+      #     ./mvnw install -DskipTests
   test:
     docker:
       - image: eclipse-temurin:17-jdk-jammy
