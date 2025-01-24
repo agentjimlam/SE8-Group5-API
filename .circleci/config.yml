@@ -14,18 +14,47 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/openjdk:17-jdk-bullseye
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
     steps:
-      - checkout
-      - run: |
-          echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
-          ./mvnw install -DskipTests
+      - checkout:
+          path: ~/project/SE8-Group5-API
+      - restore_cache:
+          keys:
+            - bus-springboot-maven-deps-{{ checksum "pom.xml" }}
+            - bus-springboot-maven-deps-
+      # {{ checksum "pom.xml" }} creates a unique identifier based on your project's dependency list
+      # The second key (bus-springboot-maven-deps-) is a fallback if the exact match isn't found
+      # restore_cache prevents downloading the same dependencies repeatedly
+      
+      # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
+      - run:
+          name: Debug current directory
+          command: |
+            pwd
+            ls -la
+            find . -name mvnw
+      - run:
+          name: Install Dependencies
+          command: ./mvnw dependency:resolve
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: bus-springboot-maven-deps-{{ checksum "pom.xml" }}
+      - run:
+          name: Build Project
+          command: ./mvnw clean package -DskipTests
+      # - run: |
+      #     echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
+      #     ./mvnw install -DskipTests
   test:
     docker:
-      - image: cimg/openjdk:17-jdk-bullseye
+      - image: eclipse-temurin:17-jdk-jammy
     steps:
       - checkout
       - run: |
+          echo "Navigating to the bus-api directory"
+          cd bus-api
           echo "Running tests"
           ./mvnw test
       # To run specific test, follow the format below
@@ -48,7 +77,7 @@ jobs:
 
   # deploy:
   #   docker:
-  #     - image: cimg/openjdk:17-jdk-bullseye
+  #     - image: eclipse-temurin:17-jdk-jammy
   #   steps:
   #     - setup_remote_docker
   #     - heroku/install
