@@ -15,9 +15,10 @@ jobs:
   build:
     docker:
       - image: eclipse-temurin:17-jdk-jammy
-    # working_directory: ~/project/bus-api
+    working_directory: ~/project/SE8-Group5-API/bus-api
     steps:
-      - checkout
+      - checkout:
+          path: ~/project/SE8-Group5-API
       - restore_cache:
           keys:
             - bus-springboot-maven-deps-{{ checksum "pom.xml" }}
@@ -35,14 +36,14 @@ jobs:
             find . -name mvnw
       - run:
           name: Install Dependencies
-          command: cd bus-api && ./mvnw dependency:resolve
+          command: ./mvnw dependency:resolve
       - save_cache:
           paths:
             - ~/.m2
           key: bus-springboot-maven-deps-{{ checksum "pom.xml" }}
       - run:
           name: Build Project
-          command: cd bus-api && ./mvnw clean package -DskipTests
+          command: ./mvnw clean package -DskipTests
       # - run: |
       #     echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
       #     ./mvnw install -DskipTests
