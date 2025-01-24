@@ -15,7 +15,7 @@ jobs:
   build:
     docker:
       - image: eclipse-temurin:17-jdk-jammy
-    # working_directory: ~/SE8-Group5-API/bus-api
+    working_directory: ~/project/bus-api
     steps:
       - checkout
       # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
@@ -24,10 +24,10 @@ jobs:
           command: pwd && ls -la
       - run:
           name: Install Dependencies
-          command: cd bus-api && ./mvnw dependency:resolve
+          command: ./mvnw dependency:resolve
       - run:
           name: Build Project
-          command: cd bus-api && ./mvnw clean package -DskipTests
+          command: ./mvnw clean package -DskipTests
       # - run: |
       #     echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
       #     ./mvnw install -DskipTests
