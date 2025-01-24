@@ -1,6 +1,14 @@
 # SE8-Group5-API
 
-Develop Branch
+Release branch v6.0.0
+
+Version 6.0.0
+- renamed .circleci folder to be in root level directory instead of in the bus-api folder, as that is standard way for .circleci folder location
+  - what I did? did a right-click delete bus-api/.circleci, then created new circleci folder in correct location but git status shows it as renamed
+- Corrected build jobs.
+- Added save_cache and restore_cache
+- Added working_directory
+- Corrected filter in build-and-push workflow to 'release', from 'develop' previously
 
 Version 5.1.0
 - Added .circleci folder and config.yml
