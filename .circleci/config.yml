@@ -15,7 +15,7 @@ jobs:
   build:
     docker:
       - image: eclipse-temurin:17-jdk-jammy
-    working_directory: ~/bus-api
+    working_directory: ~/SE8-Group5-API/bus-api
     steps:
       - checkout
       # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
