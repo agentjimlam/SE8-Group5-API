@@ -28,6 +28,9 @@ jobs:
       - run: |
           echo "Running tests"
           ./mvnw test
+      # To run specific test, follow the format below
+      # ./mvnw test -Dtest=TestClassName#testMethodName
+      # example: ./mvnw test -Dtest=AppBusStopControllerTest#testGetAllStops
 
   build-and-push:
     executor: docker/docker
@@ -43,17 +46,47 @@ jobs:
           image: jlam733/group5-api
           tag: <<pipeline.git.tag>>
 
+  # deploy:
+  #   docker:
+  #     - image: cimg/openjdk:17-jdk-bullseye
+  #   steps:
+  #     - setup_remote_docker
+  #     - heroku/install
+  #     - checkout
+  #     - run:
+  #         name: Heroku Bus API Container Push
+  #         command: |
+  #           heroku container:login
+  #           heroku stack:set container -a jimmylam-su-devops
+  #           heroku container:push web -a jimmylam-su-devops
+  #           heroku container:release web -a jimmylam-su-devops
+
 workflows:
-  backend_workflow:
+  ci_flow:
     jobs:
       - build
       - test:
           requires:
             - build
-      # - build-and-push:
+  cicd_flow:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: release
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: release
+      - build-and-push:
+          filters:
+            branches:
+              only: release
+      # - deploy:
+      #     requires:
+      #       - build-and-push
       #     filters:
       #       branches:
-      #         only: development
-      # - deploy:
-      #       requires:
-      #         - build-and-push
+      #         only: release
