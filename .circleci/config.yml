@@ -29,7 +29,10 @@ jobs:
       # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
       - run:
           name: Debug current directory
-          command: pwd && ls -la
+          command: |
+            pwd
+            ls -la
+            find . -name mvnw
       - run:
           name: Install Dependencies
           command: cd bus-api && ./mvnw dependency:resolve
