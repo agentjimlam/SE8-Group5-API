@@ -17,9 +17,9 @@ jobs:
       - image: eclipse-temurin:17-jdk-jammy
     steps:
       - checkout
-      - run: |
-          echo "Navigating to the bus-api directory"
-          cd bus-api
+      - run:
+          name: Navigating to the bus-api directory
+          command: cd bus-api
       - run:
           name: Install Dependencies
           command: ./mvnw dependency:resolve
