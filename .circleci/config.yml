@@ -15,11 +15,10 @@ jobs:
   build:
     docker:
       - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/bus-api
     steps:
       - checkout
-      - run:
-          name: Navigating to the bus-api directory
-          command: cd bus-api
+      # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
       - run:
           name: Install Dependencies
           command: ./mvnw dependency:resolve
