@@ -14,7 +14,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/openjdk:17-jdk-bullseye
+      - image: eclipse-temurin:17-jdk-jammy
     steps:
       - checkout
       - run: |
@@ -22,7 +22,7 @@ jobs:
           ./mvnw install -DskipTests
   test:
     docker:
-      - image: cimg/openjdk:17-jdk-bullseye
+      - image: eclipse-temurin:17-jdk-jammy
     steps:
       - checkout
       - run: |
@@ -48,7 +48,7 @@ jobs:
 
   # deploy:
   #   docker:
-  #     - image: cimg/openjdk:17-jdk-bullseye
+  #     - image: eclipse-temurin:17-jdk-jammy
   #   steps:
   #     - setup_remote_docker
   #     - heroku/install
