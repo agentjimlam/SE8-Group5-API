@@ -18,6 +18,8 @@ jobs:
     steps:
       - checkout
       - run: |
+          echo "Navigating to the bus-api directory"
+          cd bus-api
           echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
           ./mvnw install -DskipTests
   test:
@@ -26,6 +28,8 @@ jobs:
     steps:
       - checkout
       - run: |
+          echo "Navigating to the bus-api directory"
+          cd bus-api
           echo "Running tests"
           ./mvnw test
       # To run specific test, follow the format below
