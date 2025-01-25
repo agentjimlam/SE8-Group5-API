@@ -79,6 +79,7 @@ jobs:
   # deploy:
   #   docker:
   #     - image: eclipse-temurin:17-jdk-jammy
+  #   working_directory: ~/project/SE8-Group5-API/bus-api
   #   steps:
   #     - setup_remote_docker
   #     - heroku/install
@@ -91,13 +92,46 @@ jobs:
   #           heroku container:push web -a jimmylam-su-devops
   #           heroku container:release web -a jimmylam-su-devops
 
+  scan:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    environment:
+      IMAGE_NAME: jlam733/group5-api
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - run: docker build -t $IMAGE_NAME .
+      - snyk/scan: 
+          docker-image-name: $IMAGE_NAME
+  codescan:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    environment:
+      IMAGE_NAME: jlam733/group5-api
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - snyk/install
+      - run: |
+          snyk code test
+
 workflows:
   ci_flow:
     jobs:
       - build
-      - test:
+      - scan:
+          requires: 
+            - build
+      - codescan:
           requires:
             - build
+      - test:
+          requires:
+            - scan
   cicd_flow:
     jobs:
       - build:
