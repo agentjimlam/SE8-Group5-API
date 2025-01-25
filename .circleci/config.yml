@@ -101,9 +101,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - docker/check:
-          docker-username: DOCKER_USERNAME
-          docker-password: DOCKER_PASSWORD
+      - docker/check
       - run: docker build -t $IMAGE_NAME .
       - snyk/scan: 
           docker-image-name: $IMAGE_NAME
@@ -133,7 +131,8 @@ workflows:
             - build
       - test:
           requires:
-            - scan
+            - build
+            # - scan
   cicd_flow:
     jobs:
       - build:
