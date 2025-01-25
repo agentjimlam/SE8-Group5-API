@@ -111,8 +111,9 @@ workflows:
             branches:
               only: /^release/.*/
       - build-and-push:
-          # requires:
-          #   - test # This ensures build-and-push only runs if test passes
+          requires:
+            - test
+            # This ensures build-and-push only runs if test passes
           filters:
             branches:
               only: /^release/.*/
