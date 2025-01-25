@@ -63,6 +63,7 @@ jobs:
 
   build-and-push:
     executor: docker/docker
+    working_directory: ~/project/SE8-Group5-API/bus-api
     steps:
       - setup_remote_docker
       - checkout
