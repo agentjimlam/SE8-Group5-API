@@ -101,7 +101,9 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - docker/check
+      - docker/check:
+          docker-username: DOCKER_USERNAME
+          docker-password: DOCKER_PASSWORD
       - run: docker build -t $IMAGE_NAME .
       - snyk/scan: 
           docker-image-name: $IMAGE_NAME
