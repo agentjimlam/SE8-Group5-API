@@ -1,0 +1,160 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.1
+  heroku: circleci/heroku@2.0.0
+  docker: circleci/docker@2.1.4
+  snyk: snyk/snyk@1.5.0
+  # The maven orb contains a set of prepackaged circleci configuration you can use repeatedly in your configurations files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/maven
+  maven: circleci/maven@1.3
+
+jobs:
+  build:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    steps:
+      - checkout:
+          path: ~/project/SE8-Group5-API
+      - restore_cache:
+          keys:
+            - bus-springboot-maven-deps-{{ checksum "pom.xml" }}
+            - bus-springboot-maven-deps-
+      # {{ checksum "pom.xml" }} creates a unique identifier based on your project's dependency list
+      # The second key (bus-springboot-maven-deps-) is a fallback if the exact match isn't found
+      # restore_cache prevents downloading the same dependencies repeatedly
+      
+      # note that each run step executes in a new shell environment, so earlier "run" commands like 'cd bus-api' do not persist. setting working_directory solves this.
+      - run:
+          name: Debug current directory
+          command: |
+            pwd
+            ls -la
+            find . -name mvnw
+      - run:
+          name: Install Dependencies
+          command: ./mvnw dependency:resolve
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: bus-springboot-maven-deps-{{ checksum "pom.xml" }}
+      - run:
+          name: Build Project
+          command: ./mvnw clean package -DskipTests
+      # - run: |
+      #     echo "Install dependencies, build the maven project, and installing the package files (JAR, pom.xml) locally"
+      #     ./mvnw install -DskipTests
+  test:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    steps:
+      - checkout
+      - run: |
+          echo "Navigating to the bus-api directory"
+          cd bus-api
+          echo "Running tests"
+          ./mvnw test
+      # To run specific test, follow the format below
+      # ./mvnw test -Dtest=TestClassName#testMethodName
+      # example: ./mvnw test -Dtest=AppBusStopControllerTest#testGetAllStops
+
+  build-and-push:
+    executor: docker/docker
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check
+      # Note, above uses DOCKER_LOGIN and DOCKER_PASSWORD, set these env variables in your circleCi
+      - docker/build:
+          image: jlam733/group5-api
+          tag: <<pipeline.git.tag>>
+      - docker/push:
+          image: jlam733/group5-api
+          tag: <<pipeline.git.tag>>
+
+  # deploy:
+  #   docker:
+  #     - image: eclipse-temurin:17-jdk-jammy
+  #   working_directory: ~/project/SE8-Group5-API/bus-api
+  #   steps:
+  #     - setup_remote_docker
+  #     - heroku/install
+  #     - checkout
+  #     - run:
+  #         name: Heroku Bus API Container Push
+  #         command: |
+  #           heroku container:login
+  #           heroku stack:set container -a jimmylam-su-devops
+  #           heroku container:push web -a jimmylam-su-devops
+  #           heroku container:release web -a jimmylam-su-devops
+
+  scan:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    environment:
+      IMAGE_NAME: jlam733/group5-api
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - run: docker build -t $IMAGE_NAME .
+      - snyk/scan: 
+          docker-image-name: $IMAGE_NAME
+  codescan:
+    docker:
+      - image: eclipse-temurin:17-jdk-jammy
+    working_directory: ~/project/SE8-Group5-API/bus-api
+    environment:
+      IMAGE_NAME: jlam733/group5-api
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - snyk/install
+      - run: |
+          snyk code test
+
+workflows:
+  ci_flow:
+    jobs:
+      - build
+      - scan:
+          requires: 
+            - build
+      - codescan:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
+            # - scan
+  cicd_flow:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^release/.*/
+      - test:
+          requires:
+            - build
+          filters:
+            branches:
+              only: /^release/.*/
+      - build-and-push:
+          requires:
+            - test
+            # This ensures build-and-push only runs if test passes
+          filters:
+            branches:
+              only: /^release/.*/
+      # - deploy:
+      #     requires:
+      #       - build-and-push
+      #     filters:
+      #       branches:
+      #         only: release

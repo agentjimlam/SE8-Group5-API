@@ -1,11 +1,25 @@
 # SE8-Group5-API
 
+Release branch v6.0.0
+
+Version 6.0.0
+- renamed .circleci folder to be in root level directory instead of in the bus-api folder, as that is standard way for .circleci folder location
+  - what I did? did a right-click delete bus-api/.circleci, then created new circleci folder in correct location but git status shows it as renamed
+- Corrected build jobs.
+- Added save_cache and restore_cache
+- Added working_directory
+- Corrected filter in build-and-push workflow to 'release', from 'develop' previously
+
 Version 5.1.0
 - Added .circleci folder and config.yml
 
 Version 5.0.0
 - Renamed app.api.key to APP_API_KEY because circleCi do not allow ".", only "_" for env variable name
 - Renamed UserAccessControllerTest.java to a .txt file
+
+Version 4.0.0
+- Removed bus stop @DecimalMax @DecimalMin for Latitude and Longitude causes error during the pull of BusStops from LTA Datamall because there's bus stops in Malaysia but my Latitude Longitude min and max range settings to only Singapore land block those bus stops from getting pulled from LTA Datamall. This was causing issue when trying to build a Docker image.
+
 
 ## Keeping Datamall API secret
 
