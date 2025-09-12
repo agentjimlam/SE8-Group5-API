@@ -1,5 +1,11 @@
 # SE8-Group5-API
 
+This is the backend repo for our Bus Schedule Tracking App
+
+To access the app:
+1. Click this link and click the "Request temporary access to the demo server" button: https://cors-anywhere.herokuapp.com/corsdemo
+2. CLick this link to access the app: https://warm-queijadas-acbd52.netlify.app/
+
 Release branch v6.0.0
 
 Version 6.0.0
